@@ -1,1 +1,37 @@
-[]
+[
+  {
+    "id": "remix",
+    "name": "Remix",
+    "author": "Noctívago",
+    "description": "Trim, filter, and EQ a single sound, a whole preset's mix, or a Sound Group - with live preview, in one tab with a Sound/Preset/Group mode switch.",
+    "repo": "Venari-Hunt/noctivago-remix"
+  },
+  {
+    "id": "export",
+    "name": "Export",
+    "author": "Noctívago",
+    "description": "Bake a whole preset down to a single audio file of a chosen length and format.",
+    "repo": "Venari-Hunt/noctivago-export"
+  },
+  {
+    "id": "composite",
+    "name": "Composite",
+    "author": "Noctívago",
+    "description": "Combine multiple sounds (e.g. a doorknob turn + creak + bell) into one new baked sound, editable like any other.",
+    "repo": "Venari-Hunt/noctivago-composite"
+  },
+  {
+    "id": "browse-sounds",
+    "name": "Browse Sounds",
+    "author": "Noctívago",
+    "description": "Search and import ambient sounds from Freesound.org, with richer results and infinite scroll (more sources planned).",
+    "repo": "Venari-Hunt/noctivago-browse-sounds"
+  },
+  {
+    "id": "community",
+    "name": "Community",
+    "author": "Noctívago",
+    "description": "Browse, import and share ambience presets made by other Noctívago users.",
+    "repo": "Venari-Hunt/noctivago-community"
+  }
+]
