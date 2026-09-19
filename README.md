@@ -2,7 +2,7 @@
 
 This repo holds `community-plugins.json`, the list that **Settings > Community plugins > Browse** in [Noctívago](https://github.com/Venari-Hunt/Noctivago) reads, and `community-plugin-stats.json`, the download counts shown there. Only the list lives here. Each plugin's code stays in its own repo.
 
-Start from [noctivago-sample-plugin](https://github.com/Venari-Hunt/noctivago-sample-plugin): it already has the release workflow below.
+Start from [noctivago-sample-plugin](https://github.com/Venari-Hunt/noctivago-sample-plugin): it already has the release workflow below, and the recommended `domain/` + `components/` layout (rules with no DOM, plus small React components) that every Noctívago screen uses.
 
 ## Publishing a plugin
 
@@ -39,7 +39,7 @@ jobs:
     uses: Venari-Hunt/noctivago-plugins/.github/workflows/plugin-release.yml@main
 ```
 
-Then bump `version` in `manifest.json` (and `versions.json`), commit, and push a tag with the same version: `git tag 1.2.0 && git push origin 1.2.0`. The workflow runs `npm ci` and `npm run build` if you have a `package.json`, checks that the tag, manifest and `versions.json` agree, and publishes the release.
+Then bump `version` in `manifest.json` (and `versions.json`), commit, and push a tag with the same version: `git tag 1.2.0 && git push origin 1.2.0`. The workflow runs `npm ci`, `npm run build` and `npm test` if you have a `package.json`, checks that the tag, manifest and `versions.json` agree, and publishes the release.
 
 ## Supporting older app versions
 

@@ -10,7 +10,7 @@
 #     release:
 #       uses: Venari-Hunt/noctivago-plugins/.github/workflows/plugin-release.yml@main
 #
-# It builds the plugin (npm ci + npm run build, when there's a package.json),
+# It builds and tests the plugin (npm ci, npm run build, npm test, when there's a package.json),
 # checks the tag, manifest.json and versions.json agree, and publishes a
 # GitHub Release with manifest.json and every file the manifest names as
 # assets. The app installs from exactly those assets.
@@ -36,6 +36,7 @@ jobs:
           if [ -f package.json ]; then
             if [ -f package-lock.json ]; then npm ci; else npm install; fi
             npm run build --if-present
+            npm test --if-present
           fi
       - name: Check manifest, tag and versions.json
         id: check
