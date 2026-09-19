@@ -1,0 +1,80 @@
+# Reusable release pipeline for Noctívago plugins. A plugin repo calls it
+# from its own workflow on a tag push (see README.md, "Automatic releases"):
+#
+#   on:
+#     push:
+#       tags: ['*']
+#   permissions:
+#     contents: write
+#   jobs:
+#     release:
+#       uses: Venari-Hunt/noctivago-plugins/.github/workflows/plugin-release.yml@main
+#
+# It builds the plugin (npm ci + npm run build, when there's a package.json),
+# checks the tag, manifest.json and versions.json agree, and publishes a
+# GitHub Release with manifest.json and every file the manifest names as
+# assets. The app installs from exactly those assets.
+name: Plugin release
+on:
+  workflow_call:
+    inputs:
+      node-version:
+        type: string
+        default: '22'
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node-version }}
+      - name: Build
+        run: |
+          if [ -f package.json ]; then
+            if [ -f package-lock.json ]; then npm ci; else npm install; fi
+            npm run build --if-present
+          fi
+      - name: Check manifest, tag and versions.json
+        id: check
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          node --input-type=module <<'JS'
+          import fs from 'node:fs'
+          const fail = (msg) => { console.error(`::error::${msg}`); process.exit(1) }
+          const tag = process.env.TAG
+          const manifest = JSON.parse(fs.readFileSync('manifest.json', 'utf-8'))
+          const version = /^\d+\.\d+\.\d+(-[0-9A-Za-z.-]+)?$/
+          if (!/^[a-z0-9][a-z0-9-]*$/.test(manifest.id ?? '')) fail('manifest.json: id must be lowercase letters, digits and dashes')
+          for (const key of ['name', 'main']) if (typeof manifest[key] !== 'string' || !manifest[key]) fail(`manifest.json: missing "${key}"`)
+          if (!version.test(manifest.version ?? '')) fail('manifest.json: version must look like 1.2.3')
+          if (manifest.minAppVersion && !version.test(manifest.minAppVersion)) fail('manifest.json: minAppVersion must look like 1.2.3')
+          if (tag !== manifest.version) fail(`Tag "${tag}" must equal manifest.json version "${manifest.version}" (no "v" prefix)`)
+          const files = [...new Set([manifest.main, manifest.styles, manifest.mainProcess].filter(Boolean))]
+          for (const f of files) {
+            if (!/^[A-Za-z0-9_-][A-Za-z0-9._-]*$/.test(f) || f === 'manifest.json') fail(`"${f}" must be a plain file name at the top of the repo`)
+            if (!fs.existsSync(f)) fail(`"${f}" is named in manifest.json but wasn't found after the build`)
+          }
+          if (fs.existsSync('versions.json')) {
+            const versions = JSON.parse(fs.readFileSync('versions.json', 'utf-8'))
+            if (versions[manifest.version] !== (manifest.minAppVersion ?? '0.0.0')) {
+              fail(`versions.json must map "${manifest.version}" to "${manifest.minAppVersion ?? '0.0.0'}" (the manifest's minAppVersion)`)
+            }
+          }
+          fs.appendFileSync(process.env.GITHUB_OUTPUT, `files=${['manifest.json', ...files].join(' ')}\n`)
+          console.log(`${manifest.id} ${manifest.version}: ${['manifest.json', ...files].join(', ')}`)
+          JS
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+          FILES: ${{ steps.check.outputs.files }}
+        run: |
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" $FILES --clobber
+          else
+            gh release create "$TAG" $FILES --title "$TAG" --generate-notes
+          fi
