@@ -41,6 +41,23 @@ jobs:
 
 Then bump `version` in `manifest.json` (and `versions.json`), commit, and push a tag with the same version: `git tag 1.2.0 && git push origin 1.2.0`. The workflow runs `npm ci`, `npm run build` and `npm test` if you have a `package.json`, checks that the tag, manifest and `versions.json` agree, and publishes the release.
 
+## Checks
+
+Add `.github/workflows/ci.yml` to your plugin repo so every pull request and push to `main` runs the same build, tests and manifest/`versions.json` rules as a release (without the tag check or publishing):
+
+```yaml
+name: Check
+on:
+  pull_request:
+  push:
+    branches: [main]
+jobs:
+  check:
+    uses: Venari-Hunt/noctivago-plugins/.github/workflows/plugin-ci.yml@main
+```
+
+Both workflows use `scripts/check-plugin.mjs` for the manifest rules.
+
 ## Supporting older app versions
 
 Set `minAppVersion` in `manifest.json` to the oldest Noctívago your plugin runs on. When you raise it, keep a `versions.json` at the top of your repo that maps each plugin version to its `minAppVersion`:

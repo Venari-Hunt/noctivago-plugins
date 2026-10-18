@@ -1,0 +1,42 @@
+# Reusable check for Noctívago plugins. A plugin repo calls it on every pull
+# request and push to main (see README.md, "Checks"):
+#
+#   on:
+#     pull_request:
+#     push:
+#       branches: [main]
+#   jobs:
+#     check:
+#       uses: Venari-Hunt/noctivago-plugins/.github/workflows/plugin-ci.yml@main
+#
+# Same build, tests and manifest/versions.json rules as plugin-release.yml,
+# minus the tag check and the publish.
+name: Plugin check
+on:
+  workflow_call:
+    inputs:
+      node-version:
+        type: string
+        default: '22'
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node-version }}
+      - name: Build and test
+        run: |
+          if [ -f package.json ]; then
+            if [ -f package-lock.json ]; then npm ci; else npm install; fi
+            npm run build --if-present
+            npm test --if-present
+          fi
+      # Fetched after the tests so the test runner never sees its files.
+      - uses: actions/checkout@v4
+        with:
+          repository: Venari-Hunt/noctivago-plugins
+          path: .noctivago-plugins
+      - name: Check manifest and versions.json
+        run: node .noctivago-plugins/scripts/check-plugin.mjs
