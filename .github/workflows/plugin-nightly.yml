@@ -1,0 +1,61 @@
+name: Plugin nightly
+
+# Publishes the calling plugin's current branch as a rolling pre-release
+# tagged `nightly`, for Noctívago apps on the Nightly update channel (the
+# app's plugins/store.js reads releases/download/nightly/manifest.json and
+# takes it when it is newer than the stable release). Stable apps only read
+# releases/latest, which never returns a pre-release.
+# Use from a plugin repo:
+#   on: { push: { branches: [ui-redesign] } }
+#   jobs: { nightly: { uses: Venari-Hunt/noctivago-plugins/.github/workflows/plugin-nightly.yml@main } }
+on:
+  workflow_call:
+    inputs:
+      node-version:
+        type: string
+        default: '22'
+
+jobs:
+  nightly:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    concurrency:
+      group: plugin-nightly-${{ github.repository }}
+      cancel-in-progress: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node-version }}
+      - name: Build
+        run: |
+          if [ -f package.json ]; then
+            if [ -f package-lock.json ]; then npm ci; else npm install; fi
+            npm run build --if-present
+            npm test --if-present
+          fi
+      - name: Nightly version in the manifest
+        id: files
+        env:
+          RUN: ${{ github.run_number }}
+        run: |
+          node -e '
+            const fs = require("fs")
+            const m = JSON.parse(fs.readFileSync("manifest.json", "utf8"))
+            const day = new Date().toISOString().slice(0, 10).replace(/-/g, "")
+            m.version = m.version.replace(/-.*/, "") + "-nightly." + day + "." + process.env.RUN
+            fs.writeFileSync("manifest.json", JSON.stringify(m, null, 2) + "\n")
+            const files = ["manifest.json", ...new Set([m.main, m.styles, m.mainProcess].filter(Boolean))]
+            for (const f of files) if (!fs.existsSync(f)) { console.error("Missing " + f); process.exit(1) }
+            fs.appendFileSync(process.env.GITHUB_OUTPUT, "files=" + files.join(" ") + "\n")
+            console.log(m.version)
+          '
+      - name: Publish the rolling nightly pre-release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          FILES: ${{ steps.files.outputs.files }}
+        run: |
+          gh release delete nightly --cleanup-tag --yes >/dev/null 2>&1 || true
+          gh release create nightly $FILES --prerelease --target "$GITHUB_SHA" --title "Nightly" \
+            --notes "Automatic build of $GITHUB_SHA for Noctívago's Nightly update channel. Stable apps never install it."
