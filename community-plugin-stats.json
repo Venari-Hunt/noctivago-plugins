@@ -1,9 +1,9 @@
 {
   "remix": {
-    "downloads": 22,
+    "downloads": 24,
     "updated": 1794471601000,
-    "nightly": 1,
-    "1.2.3": 8,
+    "nightly": 2,
+    "1.2.3": 9,
     "1.2.2": 1,
     "1.2.1": 2,
     "1.2.0": 1,
@@ -12,31 +12,31 @@
     "1.0.0": 2
   },
   "export": {
-    "downloads": 16,
+    "downloads": 18,
     "updated": 1794422817000,
-    "nightly": 2,
-    "1.2.0": 7,
+    "nightly": 3,
+    "1.2.0": 8,
     "1.1.0": 3,
     "1.0.0": 4
   },
   "composite": {
-    "downloads": 11,
+    "downloads": 13,
     "updated": 1794410518000,
-    "nightly": 2,
-    "1.0.0": 9
+    "nightly": 3,
+    "1.0.0": 10
   },
   "browse-sounds": {
-    "downloads": 15,
+    "downloads": 17,
     "updated": 1794409108000,
-    "nightly": 2,
-    "1.1.0": 9,
+    "nightly": 3,
+    "1.1.0": 10,
     "1.0.0": 4
   },
   "community": {
-    "downloads": 16,
+    "downloads": 18,
     "updated": 1794423338000,
-    "nightly": 2,
-    "1.2.0": 9,
+    "nightly": 3,
+    "1.2.0": 10,
     "1.1.0": 2,
     "1.0.0": 3
   }
