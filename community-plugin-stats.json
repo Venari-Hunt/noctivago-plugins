@@ -1,8 +1,8 @@
 {
   "remix": {
-    "downloads": 24,
-    "updated": 1794471601000,
-    "nightly": 2,
+    "downloads": 22,
+    "updated": 1794651283000,
+    "nightly": 0,
     "1.2.3": 9,
     "1.2.2": 1,
     "1.2.1": 2,
@@ -12,9 +12,9 @@
     "1.0.0": 2
   },
   "export": {
-    "downloads": 18,
-    "updated": 1794422817000,
-    "nightly": 3,
+    "downloads": 17,
+    "updated": 1794650925000,
+    "nightly": 2,
     "1.2.0": 8,
     "1.1.0": 3,
     "1.0.0": 4
