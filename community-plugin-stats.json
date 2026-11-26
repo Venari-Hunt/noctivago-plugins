@@ -1,8 +1,8 @@
 {
   "remix": {
-    "downloads": 22,
-    "updated": 1795611075000,
-    "nightly": 0,
+    "downloads": 23,
+    "updated": 1795682245000,
+    "nightly": 1,
     "1.2.3": 9,
     "1.2.2": 1,
     "1.2.1": 2,
@@ -12,9 +12,9 @@
     "1.0.0": 2
   },
   "export": {
-    "downloads": 17,
+    "downloads": 19,
     "updated": 1795589148000,
-    "nightly": 1,
+    "nightly": 3,
     "1.2.0": 9,
     "1.1.0": 3,
     "1.0.0": 4
@@ -33,9 +33,9 @@
     "1.0.0": 4
   },
   "community": {
-    "downloads": 16,
+    "downloads": 18,
     "updated": 1795590419000,
-    "nightly": 1,
+    "nightly": 3,
     "1.2.0": 10,
     "1.1.0": 2,
     "1.0.0": 3
